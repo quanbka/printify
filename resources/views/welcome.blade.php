@@ -12,7 +12,7 @@
             <script type="text/javascript">
             chart = Highcharts.chart('container', {
                 title: {
-                    text: 'Tỉ lệ autofulfill trong 7 ngày vừa qua'
+                    text: 'Tỉ lệ autofulfill trong 90 ngày vừa qua'
                 },
                 subtitle: {
                     text: 'Nguồn: Printerval'
@@ -57,15 +57,18 @@
                 }]
             });
 
+            var totalOrders = 0;
+            var totalFulfillOrders = 0;
+
             async function initSlide () {
-                let days = await get7RecentDays();
+                let days = await getRecentDays();
                 console.log(days);
                 let ratio = await getRatios(days);
                 console.log(ratio);
 
             }
 
-            async function get7RecentDays () {
+            async function getRecentDays () {
                 let retval = [];
                 for (var i = -90; i < 0; i++) {
                     retval.push(new Date(Date.now() + i * 84600000).toISOString().slice(0, 10));
@@ -85,10 +88,13 @@
                     chart.update({
                         series : {
                             data : retval
-                        }
+                        },
+                        subtitle : { text : `Số đơn autofulfill: ${totalFulfillOrders} / ${totalOrders} ` },
+                        title : { text : `Tỉ lệ auto fulfill : ${totalFulfillOrders * 100 / totalOrders} %` },
                     });
                 }
-
+                // console.log(totalOrders)
+                // console.log(totalFulfillOrders)
                 return retval;
             }
 
@@ -96,11 +102,13 @@
                 let url = `https://glob.api.printerval.com/v2/order?sorts=-created_at&get_is_merge=1&filters=order.created_at=[${day};${day}%2023:59:59],order.payment_status=paid&metric=count`;
                 let response = await axios.get(url);
                 let order = response.data.result;
-                console.log(order);
+                totalOrders += order;
+                // console.log(order);
                 url = `https://glob.api.printerval.com/v2/order?sorts=-created_at&get_is_merge=1&filters=order.created_at=[${day};${day}%2023:59:59],order.payment_status=paid&metric=count&scopes=orderMeta(keys=[is_auto_fulfill];values=[4])`;
                 response = await axios.get(url);
                 let fulfill_order = response.data.result;
-                console.log(fulfill_order);
+                totalFulfillOrders += fulfill_order;
+                // console.log(fulfill_order);
                 return fulfill_order * 100 / order;
             }
 
