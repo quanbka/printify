@@ -23,19 +23,17 @@
 
                 }]
             });
-
             var totalOrders = 0;
             var totalFulfillOrders = 0;
-
             async function initSlide () {
                 let days = await getRecentDays();
                 let ratio = await getRatios(days);
             }
-
             async function getRecentDays () {
                 let retval = [];
-                for (var i = -25; i < 0; i++) {
-                    retval.push(new Date(Date.now() + i * 84600000).toISOString().slice(0, 10));
+                for (var i = 1648771200000; i < Date.now(); i = i + 84600000) {
+                    time = new Date(i);
+                    retval.push(time.toISOString().slice(0, 10));
                 }
                 chart.update({
                     xAxis : {
@@ -44,7 +42,6 @@
                 });
                 return retval;
             }
-
             async function getRatios (days) {
                 let retval = [];
                 for (var i = 0; i < days.length; i++) {
@@ -59,7 +56,6 @@
                 }
                 return retval;
             }
-
             async function getRatio (day) {
                 let url = `https://glob.api.printerval.com/v2/order?sorts=-created_at&get_is_merge=1&filters=order.created_at=[${day};${day}%2023:59:59],order.payment_status=paid&metric=count`;
                 let response = await axios.get(url);
@@ -71,13 +67,7 @@
                 totalFulfillOrders += fulfill_order;
                 return fulfill_order * 100 / order;
             }
-
             initSlide()
-
             </script>
-
-
-
-            Filter
     </body>
 </html>
