@@ -19,6 +19,7 @@
             "database"
         ],
         "psr-4": {
+            "Modules\\PrintSuppliers\\" : "modules/PrintSuppliers",
             "App\\": "app/"
         }
     },

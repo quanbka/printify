@@ -14,3 +14,5 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/print_providers/{id}.json', '\Modules\PrintSuppliers\Controllers\PrintifyTemplate@index');
