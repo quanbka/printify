@@ -70,7 +70,7 @@
 
             async function getRecentDays () {
                 let retval = [];
-                for (var i = -90; i < 0; i++) {
+                for (var i = -25; i < 0; i++) {
                     retval.push(new Date(Date.now() + i * 84600000).toISOString().slice(0, 10));
                 }
                 chart.update({
