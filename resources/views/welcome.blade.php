@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
@@ -34,17 +36,22 @@
                 series: [{
                     name: 'Tỉ lệ auto fulfill',
                     data: []
+
                 }, {
                     name: 'Tỉ lệ không có template fulfill',
                     data: []
                 }, {
                     name: 'Tỉ lệ không có design',
                     data: []
+                }, {
+                    name: 'Tỉ lệ lỗi',
+                    data: []
                 }
-            ]
+			]
             });
             var totalOrders = 0;
             var totalFulfillOrders = 0;
+			var totalError = 0;
             async function initSlide () {
                 let days = await getRecentDays();
                 let ratio = await getRatios(days);
@@ -66,15 +73,16 @@
                 let retval = [];
                 let retval2 = [];
                 let retval3 = [];
+				let retval4 = [];
                 for (var i = 0; i < days.length; i++) {
                     let ratio = await getRatio(days[i]);
                     retval.push(ratio.fulfill * 100 / ratio.order);
                     retval2.push(ratio.notTemplate * 100 / ratio.order);
                     retval3.push(ratio.notDesign * 100 / ratio.order);
+					retval4.push(100 - ratio.notError * 100 / ratio.fulfill);
 
                     chart.update({
                         series : [
-
                             {
                                 name : "Tỉ lệ đơn không có template",
                                 data : retval2
@@ -87,9 +95,13 @@
                                 name : "Tỉ lệ auto fulfill",
                                 data : retval
                             },
+							{
+                                name : "Tỉ lệ lỗi",
+                                data : retval4
+                            },
                         ],
                         subtitle : { text : `Số đơn autofulfill: ${totalFulfillOrders} / ${totalOrders} ` },
-                        title : { text : `Tỉ lệ auto fulfill : ${totalFulfillOrders * 100 / totalOrders} %` },
+                        title : { text : `Tỉ lệ auto fulfill : ${totalFulfillOrders * 100 / totalOrders} %; Tỉ lệ lỗi : ${totalError * 100 / totalOrders} %` },
                     });
                 }
                 return retval;
@@ -111,13 +123,19 @@
                 response = await axios.get(url);
                 let notDesign = response.data.result;
 
+				url = `https://glob.api.printerval.com/v2/order?sorts=-created_at&get_is_merge=1&filters=order.created_at=[${day};${day}%2023:59:59],order.payment_status=paid&metric=count&scopes=orderMeta(keys=[is_auto_fulfill];values=[4];not_keys=[error_auto_fulfill])`;
+                response = await axios.get(url);
+                let notError = response.data.result;
+
                 totalOrders += order;
                 totalFulfillOrders += fulfill;
+				totalError += fulfill - notError;
                 return {
                     fulfill,
                     order,
                     notTemplate,
-                    notDesign
+                    notDesign,
+					notError
                 };
             }
             initSlide()
