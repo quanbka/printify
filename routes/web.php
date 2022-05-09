@@ -16,3 +16,4 @@ Route::get('/', function () {
 });
 
 Route::get('/print_providers/{id}.json', '\Modules\PrintSuppliers\Controllers\PrintifyTemplate@index');
+Route::get('/v3/catalogs/{category}/products:search', '\Modules\PrintSuppliers\Controllers\GeletoTemplate@index');
