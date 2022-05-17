@@ -58,12 +58,15 @@
             }
             async function getRecentDays () {
                 let retval = [];
-                for (var i = 1648771200000; i < Date.now(); i = i + 84600000) {
+                console.log(Date.now());
+                for (var i = Date.now(); i >= 1648771200000; i = i - 84600000) {
+
                     time = new Date(i);
                     retval.push(time.toISOString().slice(0, 10));
                 }
                 chart.update({
                     xAxis : {
+                        reversed : true,
                         categories : retval
                     }
                 });
