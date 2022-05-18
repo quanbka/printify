@@ -23,8 +23,10 @@ for (var i = 0; i < jsonData.result.length; i++) {
         // console.log(product_sku_id);
         url = `https://printerval.com/de/print-suppliers/${product_sku_id}/template`;
         response = await axios.get(url)
-        console.log(response.data.input);
-        console.log(item.productUid);
+        if (response.data.input[0]) {
+            console.log(response.data.input)
+            console.log(item.productUid);
+        }
     }
 }
 
