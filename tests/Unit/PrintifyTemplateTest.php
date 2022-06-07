@@ -17,7 +17,6 @@ class PrintifyTemplateTest extends TestCase
     {
         $printifyTemplate = new PrintifyTemplate;
         $response = $printifyTemplate->getTemplate($input);
-        // print_r($response); die;
         if ($response) {
             $this->assertSame($output, $response);
         }
@@ -26,9 +25,8 @@ class PrintifyTemplateTest extends TestCase
 
     public function provider () {
         return [
-            [["7", "Black", "M", "Men", ""], [6,29,12125, "3909x4430"]],
-            [["8", "Light Pink", "L", "Unisex", "Classic Hoodie"], [6,29,12125, "3909x4430"]],
-            // [["7", "Navy", "M", "Women", ""], [6,29,12125, "3909x4430"]],
+            [["7", "Black", "M", "Men", "", 'front'], [6,29,12125, "3909x4430"]],
+            [["7", "Black", "M", "Men", "Classic T-shirt", 'front'], [36,45,22088, "3129x4173"]],
         ];
     }
 }
